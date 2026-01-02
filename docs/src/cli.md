@@ -20,8 +20,8 @@ Design for both:
 - `--verbose` / `-v`: include debug context (not secrets)
 - `--no-persist`: keep vault metadata in memory only (no SQLite)
 - `--data-dir <PATH>`: override the data directory used for persistence
-- `--version`: print version
-- `--help`: print help
+- `--version` / `-V`: print version
+- `--help` / `-h`: print help
 ## STDIN / STDOUT rules
 
 - Any argument that accepts a “string payload” should accept `-` as “read from stdin”.
@@ -31,21 +31,31 @@ Design for both:
   - If stdout is a TTY, include formatting and helpful labels.
   - If stdout is not a TTY, output only the raw token or raw JSON (so it composes).
 
-## Configuration
+## Configuration (current)
 
-Recommended precedence (lowest → highest):
+The current CLI does not load a config file. It only honors specific environment variables plus CLI flags.
+
+Precedence (lowest → highest):
 
 1. Built-in defaults
-2. Config file (optional): `~/.config/jwt-tester/config.toml` (or platform equivalent)
-3. Environment variables (optional): `JWT_TESTER_*`
-4. Command-line flags
+2. Environment variables (only those documented below)
+3. Command-line flags
 
 Secrets should not be stored in config unless explicitly enabled and clearly documented.
 
 ### Vault/keychain configuration (jwt-tester)
 
 - `JWT_TESTER_KEYCHAIN_SERVICE`: overrides the OS keychain “service” name used to store secret material.
-  - default (current scaffold): `jwt-tester`
+  - default: `jwt-tester`
+- `JWT_TESTER_KEYCHAIN_BACKEND`: `os` (default) or `file` (Docker-only).
+- `JWT_TESTER_KEYCHAIN_PASSPHRASE`: required when `JWT_TESTER_KEYCHAIN_BACKEND=file`.
+- `JWT_TESTER_KEYCHAIN_DIR`: optional override for the file-backend storage directory.
+- `JWT_TESTER_DOCKER`: set to `1` to allow the file keychain backend (used in Docker).
+
+### UI build configuration (jwt-tester ui)
+
+- `JWT_TESTER_UI_ASSETS_DIR`: override the location of prebuilt UI assets.
+- `JWT_TESTER_NPM`: override the npm executable used for UI builds.
 
 ## Logging and diagnostics
 

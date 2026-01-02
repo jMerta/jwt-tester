@@ -243,16 +243,16 @@ Suggested interface:
 
 ```
 jwt-tester vault project add <NAME> [--description <TEXT>] [--tag <TAG> ...]    
-jwt-tester vault project list
+jwt-tester vault project list [--details]
 jwt-tester vault project delete [<ID>] [--name <NAME>]
 jwt-tester vault project set-default-key --project <NAME> (--key-id <UUID> | --key-name <NAME> | --clear)
-jwt-tester vault key add --project <NAME> [--name <KEY_NAME>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...] --kind hmac --secret <SECRET>
+jwt-tester vault key add --project <NAME> [--name <KEY_NAME>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...] [--kind <hmac|rsa|ec|eddsa|jwks>] --secret <SECRET>
 jwt-tester vault key generate --project <NAME> [--name <KEY_NAME>] [--kind <hmac|rsa|ec|eddsa>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...]
   [--hmac-bytes <N>] [--rsa-bits <N>] [--ec-curve <P-256|P-384>] [--reveal] [--out <PATH>]
-jwt-tester vault key list --project <NAME>
+jwt-tester vault key list --project <NAME> [--details]
 jwt-tester vault key delete [<ID>] [--project <NAME> --name <NAME>]
 jwt-tester vault token add --project <NAME> --name <TOKEN_NAME> --token <TOKEN>
-jwt-tester vault token list --project <NAME>
+jwt-tester vault token list --project <NAME> [--details]
 jwt-tester vault token delete [<ID>] [--project <NAME> --name <NAME>]
 jwt-tester vault export --passphrase <PASS> [--out <PATH>]
 jwt-tester vault import --bundle <BUNDLE|-|@file> --passphrase <PASS> [--replace]

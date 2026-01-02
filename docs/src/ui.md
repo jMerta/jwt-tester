@@ -18,7 +18,7 @@ jwt-tester ui
 
 Default behavior:
 
-- starts an HTTP server bound to localhost only (`127.0.0.1`, and optionally `::1`)
+- starts an HTTP server bound to the configured host (default `127.0.0.1`)
 - serves a small web app at `/`
 - prints the URL to stdout
 - persists data locally (unless global `--no-persist` is set)
@@ -181,7 +181,7 @@ Optional (later): passphrase export/import
 - Export an encrypted bundle (user-provided passphrase) so vaults can be moved between machines.
 - Keep OS keychain as the day-to-day default, and use passphrase only for portability.
 
-Vault lock/unlock:
+Vault lock/unlock (planned; not implemented yet):
 
 - lock at startup (optional) or unlock automatically if OS keychain is used
 - auto-lock after inactivity (`--lock-after`)
@@ -206,18 +206,19 @@ Keychain storage depends on a stable identifier:
 - bind to `127.0.0.1` by default
 - use an ephemeral port by default (`--port 0`) and print the final URL
 
-### Routes (suggested)
+### Routes (current)
 
 - `GET /` → UI app shell
 - `GET /assets/*` → static assets
 - `GET /api/health` → returns `{ ok: true }`
-- `POST /api/decode`
-- `POST /api/verify`
-- `POST /api/encode`
-- `GET /api/vault/keys` / `POST /api/vault/keys` / `DELETE /api/vault/keys/:id`
-- `GET /api/vault/projects` / `POST /api/vault/projects` / `DELETE /api/vault/projects/:id`
-- `GET /api/vault/tokens` / `POST /api/vault/tokens` / `DELETE /api/vault/tokens/:id`
-- `POST /api/vault/lock` / `POST /api/vault/unlock`
+- `GET /api/csrf` → returns `{ ok: true, csrf: "..." }`
+- `POST /api/jwt/encode`
+- `POST /api/jwt/verify`
+- `POST /api/jwt/inspect`
+- `GET /api/vault/projects` / `POST /api/vault/projects`
+- `POST /api/vault/projects/:id/default-key` / `DELETE /api/vault/projects/:id`
+- `GET /api/vault/keys` / `POST /api/vault/keys` / `POST /api/vault/keys/generate` / `DELETE /api/vault/keys/:id`
+- `GET /api/vault/tokens` / `POST /api/vault/tokens` / `POST /api/vault/tokens/:id/material` / `DELETE /api/vault/tokens/:id`
 - `POST /api/vault/export` / `POST /api/vault/import`
 
 ### Security headers (minimum)

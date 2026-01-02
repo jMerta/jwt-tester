@@ -19,7 +19,7 @@ jwt-tester encode --alg hs256 --secret env:JWT_SECRET \
 **Verify a token:**
 ```bash
 # Verify the token from stdin
-echo "eyJ..." | jwt-tester verify --secret env:JWT_SECRET
+echo "eyJ..." | jwt-tester verify --secret env:JWT_SECRET -
 ```
 
 ## 2. Working with RSA Keys
@@ -53,6 +53,15 @@ jwt-tester vault key add --project "backend-api" \
   
 # 3. Set it as default (optional)
 jwt-tester vault project set-default-key --project "backend-api" --key-name "staging-key"
+```
+
+**Generate a key in the vault (no external secret):**
+```bash
+jwt-tester vault key generate --project "backend-api" \
+  --name "dev-hmac" \
+  --kind hmac \
+  --hmac-bytes 32 \
+  --reveal
 ```
 
 **Daily Usage:**

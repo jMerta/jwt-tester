@@ -101,6 +101,10 @@ To cross-compile for other platforms (e.g., from Linux to Windows), usage of `cr
 
 The application is primarily configured via CLI flags, but it respects:
 
-*   `JWT_TESTER_KEYCHAIN_SERVICE`: Overrides the service name used in the OS keychain.
+*   `JWT_TESTER_KEYCHAIN_SERVICE`: Overrides the service name used in the OS keychain (default: `jwt-tester`).
+*   `JWT_TESTER_KEYCHAIN_BACKEND`: `os` (default) or `file` (Docker-only).
+*   `JWT_TESTER_KEYCHAIN_PASSPHRASE`: Required when using the file keychain backend.
+*   `JWT_TESTER_KEYCHAIN_DIR`: Override the file keychain storage directory (defaults to `<data-dir>/keychain`).
+*   `JWT_TESTER_DOCKER`: Set to `1` to allow the file keychain backend.
 *   `JWT_TESTER_UI_ASSETS_DIR`: Point to external UI assets (skips embedded assets).
 *   `JWT_TESTER_NPM`: Path to npm executable (for build scripts).

@@ -8,7 +8,7 @@
 When `--json` is provided (global flag placed before the subcommand, e.g. `jwt-tester --json decode <TOKEN>`):
 
 - stdout must be valid JSON only (no extra banners).
-- stderr should be empty on success; on failure it may contain minimal diagnostics, but prefer JSON-only contracts.
+- stderr should be empty; errors are emitted as JSON on stdout in the current CLI.
 
 ## Text output conventions
 

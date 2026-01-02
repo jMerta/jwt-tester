@@ -2,55 +2,66 @@
 
 The `jwt-tester ui` command starts a local HTTP server that provides a REST API for the frontend. This API allows the UI to interact with the vault and perform JWT operations.
 
-**Base URL:** `http://127.0.0.1:<PORT>/api`
+**Base URL:** `http://127.0.0.1:<PORT>`
 **Content-Type:** `application/json`
 
 ## Security
+- **Localhost only by default:** The server binds to `127.0.0.1` unless `--allow-remote` is used.
+- **CSRF protection:** All `POST`/`DELETE` requests require the `x-csrf-token` header.
+  - Obtain a token via `GET /api/csrf`.
+- **Origin checks:** Non-GET requests with an `Origin` not starting with `http://127.0.0.1` or `http://localhost` are rejected.
+- **CORS:** Disabled (no cross-origin access by default).
 
-- **Localhost Only:** By default, the API binds only to `127.0.0.1`.
-- **CSRF Protection:** All state-changing requests (`POST`, `DELETE`) require a `X-CSRF-Token` header.
-  - The token can be obtained via `GET /api/csrf`.
-- **CORS:** Disabled by default. `Origin` header is checked to block non-local requests.
+## Response envelope
+Successful responses:
+```json
+{ "ok": true, "data": { } }
+```
+Errors:
+```json
+{ "ok": false, "error": "message", "code": "OPTIONAL_CODE" }
+```
 
 ---
 
 ## Core Endpoints
-
 ### Health Check
-**GET** `/health`
-Returns 200 OK if the server is running.
+**GET** `/api/health`
 ```json
-{
-  "ok": true
-}
+{ "ok": true }
 ```
 
 ### CSRF Token
-**GET** `/csrf`
-Returns the CSRF token required for subsequent POST/DELETE requests.
+**GET** `/api/csrf`
 ```json
-{
-  "ok": true,
-  "csrf": "base64_encoded_token"
-}
+{ "ok": true, "csrf": "base64url_token" }
 ```
 
 ---
 
-## JWT Operations
+## JWT Operations (all require `x-csrf-token`)
 
 ### Encode Token
-**POST** `/jwt/encode`
-Creates a signed JWT.
+**POST** `/api/jwt/encode`
 
-**Request:**
+**Request (fields mirror CLI encode flags):**
 ```json
 {
   "project": "project_name",
-  "alg": "HS256",
+  "alg": "hs256",
   "key_id": "optional_uuid",
+  "key_name": "optional_name",
   "claims": "{\"sub\":\"123\"}",
+  "kid": "optional_kid",
+  "typ": "JWT",
+  "no_typ": false,
   "iss": "issuer",
+  "sub": "subject",
+  "aud": ["aud1"],
+  "jti": "id",
+  "iat": "now",
+  "no_iat": false,
+  "nbf": "+5m",
   "exp": "+30m"
 }
 ```
@@ -59,25 +70,29 @@ Creates a signed JWT.
 ```json
 {
   "ok": true,
-  "data": {
-    "token": "eyJ...",
-    "key_source": "key-name"
-  }
+  "data": { "token": "eyJ...", "key_source": "project:backend-api" }
 }
 ```
 
 ### Verify Token
-**POST** `/jwt/verify`
-Verifies a token's signature and claims.
+**POST** `/api/jwt/verify`
 
 **Request:**
 ```json
 {
   "project": "project_name",
   "token": "eyJ...",
-  "alg": "HS256",
+  "alg": "auto",
+  "key_id": "optional_uuid",
+  "key_name": "optional_name",
   "try_all_keys": false,
-  "ignore_exp": false
+  "ignore_exp": false,
+  "leeway_secs": 30,
+  "iss": "issuer",
+  "sub": "subject",
+  "aud": ["aud1"],
+  "require": ["exp"],
+  "explain": true
 }
 ```
 
@@ -85,25 +100,16 @@ Verifies a token's signature and claims.
 ```json
 {
   "ok": true,
-  "data": {
-    "valid": true,
-    "claims": { ... },
-    "explain": { ... } // If explain=true
-  }
+  "data": { "valid": true, "claims": { }, "explain": { } }
 }
 ```
 
 ### Inspect Token
-**POST** `/jwt/inspect`
-Decodes a token without verifying (for inspection).
+**POST** `/api/jwt/inspect`
 
 **Request:**
 ```json
-{
-  "token": "eyJ...",
-  "date": "utc", // utc, local, or +HH:MM
-  "show_segments": true
-}
+{ "token": "eyJ...", "date": "utc", "show_segments": true }
 ```
 
 **Response:**
@@ -111,10 +117,10 @@ Decodes a token without verifying (for inspection).
 {
   "ok": true,
   "data": {
-    "header": { ... },
-    "payload": { ... },
-    "summary": { "alg": "HS256", "kid": "..." },
-    "dates": { "exp": "2024-01-01T..." },
+    "header": { },
+    "payload": { },
+    "summary": { "alg": "HS256", "kid": null, "typ": "JWT", "sizes": { } },
+    "dates": { },
     "segments": ["header_b64", "payload_b64", "sig_b64"]
   }
 }
@@ -122,36 +128,36 @@ Decodes a token without verifying (for inspection).
 
 ---
 
-## Vault Management
+## Vault Management (all `POST`/`DELETE` require `x-csrf-token`)
 
 ### Projects
-
-- **GET** `/vault/projects`: List all projects.
-- **POST** `/vault/projects`: Create a project.
+- **GET** `/api/vault/projects`
+- **POST** `/api/vault/projects`
   - Body: `{ "name": "prod", "description": "...", "tags": ["a"] }`
-- **DELETE** `/vault/projects/:id`: Delete a project.
-- **POST** `/vault/projects/:id/default-key`: Set default key.
-  - Body: `{ "key_id": "uuid" }`
+- **POST** `/api/vault/projects/:id/default-key`
+  - Body: `{ "key_id": "uuid" }` (omit or set `null` to clear)
+- **DELETE** `/api/vault/projects/:id`
 
 ### Keys
-
-- **GET** `/vault/keys?project_id=...`: List keys (optionally filtered).
-- **POST** `/vault/keys`: Import an existing key.
-  - Body: `{ "project_id": "...", "name": "my-key", "kind": "hmac", "secret": "..." }`
-- **POST** `/vault/keys/generate`: Generate a new key.
-  - Body: `{ "project_id": "...", "kind": "rsa", "rsa_bits": 2048 }`
-- **DELETE** `/vault/keys/:id`: Delete a key.
+- **GET** `/api/vault/keys?project_id=...`
+- **POST** `/api/vault/keys`
+  - Body: `{ "project_id": "...", "name": "my-key", "kind": "hmac", "secret": "...", "kid": "...", "description": "...", "tags": ["a"] }`
+- **POST** `/api/vault/keys/generate`
+  - Body: `{ "project_id": "...", "name": "key", "kind": "rsa", "rsa_bits": 2048 }`
+  - Response includes the generated material: `{ "ok": true, "data": { "key": { ... }, "material": "...", "format": "pem" } }`
+- **DELETE** `/api/vault/keys/:id`
 
 ### Tokens (Samples)
-
-- **GET** `/vault/tokens?project_id=...`: List saved tokens.
-- **POST** `/vault/tokens`: Save a token.
+- **GET** `/api/vault/tokens?project_id=...`
+- **POST** `/api/vault/tokens`
   - Body: `{ "project_id": "...", "name": "sample", "token": "..." }`
-- **DELETE** `/vault/tokens/:id`: Delete a token.
+- **POST** `/api/vault/tokens/:id/material`
+  - Response: `{ "ok": true, "data": { "token": "..." } }`
+- **DELETE** `/api/vault/tokens/:id`
 
 ### Import / Export
-
-- **POST** `/vault/export`: Get encrypted vault dump.
+- **POST** `/api/vault/export`
   - Body: `{ "passphrase": "..." }`
-- **POST** `/vault/import`: Restore vault from dump.
+  - Response: `{ "ok": true, "data": { "bundle": "{...}" } }`
+- **POST** `/api/vault/import`
   - Body: `{ "bundle": "{...}", "passphrase": "...", "replace": true }`
