@@ -1,0 +1,93 @@
+name: bootstrap-npm
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-platform:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            platform: linux
+            arch: x64
+            useCross: false
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            platform: linux
+            arch: arm64
+            useCross: true
+          - os: macos-13
+            target: x86_64-apple-darwin
+            platform: darwin
+            arch: x64
+            useCross: false
+          - os: macos-14
+            target: aarch64-apple-darwin
+            platform: darwin
+            arch: arm64
+            useCross: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - name: Ensure npm supports trusted publishing
+        run: npm install -g npm@latest
+      - name: Ensure NPM_TOKEN is set
+        if: env.NODE_AUTH_TOKEN == ''
+        run: |
+          echo "NPM_TOKEN secret is required for bootstrap publishing."
+          exit 1
+      - name: Install Linux deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsecret-1-dev pkg-config
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Install cross
+        if: matrix.useCross == true
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+      - name: Build UI assets
+        working-directory: jwt-tester-app/ui
+        run: npm ci
+      - name: Build UI assets (bundle)
+        working-directory: jwt-tester-app/ui
+        run: npm run build
+      - name: Build binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUILDER="cargo"
+          if [[ "${{ matrix.useCross }}" == "true" ]]; then
+            BUILDER="cross"
+          fi
+          $BUILDER build --manifest-path jwt-tester-app/Cargo.toml --release --target ${{ matrix.target }}
+          $BUILDER build --manifest-path jwt-tester-app/Cargo.toml --release --target ${{ matrix.target }} --no-default-features --features cli-only
+      - name: Package and publish platform binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXT=""
+          if [[ "${{ matrix.platform }}" == "win32" ]]; then
+            EXT=".exe"
+          fi
+          UI_BIN="jwt-tester-app/target/${{ matrix.target }}/release/jwt-tester${EXT}"
+          CLI_BIN="jwt-tester-app/target/${{ matrix.target }}/release/jwt-tester-cli${EXT}"
+          node scripts/npm/package-platform.mjs --variant ui --platform "${{ matrix.platform }}" --arch "${{ matrix.arch }}" --binary "$UI_BIN" --assets jwt-tester-app/ui/dist
+          node scripts/npm/package-platform.mjs --variant cli --platform "${{ matrix.platform }}" --arch "${{ matrix.arch }}" --binary "$CLI_BIN"
+          npm publish --access public "dist/npm/@jakmer/jwt-tester-${{ matrix.platform }}-${{ matrix.arch }}"
+          npm publish --access public "dist/npm/@jakmer/jwt-tester-cli-${{ matrix.platform }}-${{ matrix.arch }}"

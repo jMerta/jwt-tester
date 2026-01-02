@@ -1,0 +1,33 @@
+{
+  "name": "jwt-tester-cli",
+  "version": "0.1.0",
+  "description": "JWT tester CLI-only build (Rust).",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jMerta/jwt-tester.git"
+  },
+  "homepage": "https://github.com/jMerta/jwt-tester",
+  "bugs": {
+    "url": "https://github.com/jMerta/jwt-tester/issues"
+  },
+  "bin": {
+    "jwt-tester": "bin/jwt-tester.js",
+    "jwt-tester-cli": "bin/jwt-tester-cli.js"
+  },
+  "files": [
+    "bin/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "optionalDependencies": {
+    "@jakmer/jwt-tester-cli-darwin-arm64": "0.1.0",
+    "@jakmer/jwt-tester-cli-darwin-x64": "0.1.0",
+    "@jakmer/jwt-tester-cli-linux-arm64": "0.1.0",
+    "@jakmer/jwt-tester-cli-linux-x64": "0.1.0",
+    "@jakmer/jwt-tester-cli-win32-x64": "0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

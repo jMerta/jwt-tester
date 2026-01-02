@@ -1,5 +1,29 @@
 # Setup and Deployment
 
+## Install via npm (recommended)
+
+The fastest way to install a prebuilt binary is via npm:
+
+```bash
+npm install -g jwt-tester-tool
+jwt-tester --help
+```
+
+If you want the CLI-only build, install the CLI package. It still exposes the
+`jwt-tester` command and also provides a `jwt-tester-cli` alias:
+
+```bash
+npm install -g jwt-tester-cli
+jwt-tester --help
+jwt-tester-cli --help
+```
+
+Supported npm binaries: macOS (x64/arm64), Linux (x64/arm64), Windows (x64).
+
+> Note: If you install both packages globally, the `jwt-tester` command points
+> to the package installed last. Use `jwt-tester-cli` to force the CLI-only
+> build or uninstall one of them.
+
 ## Local Development Setup
 
 To build `jwt-tester` from source, you need a standard Rust environment and Node.js for the UI.

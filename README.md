@@ -26,6 +26,13 @@ Full documentation is available in the `docs/` directory:
 
 ## Quick Start
 
+Install via npm:
+
+```bash
+npm install -g jwt-tester-tool
+jwt-tester --help
+```
+
 From the repo root:
 
 ```powershell

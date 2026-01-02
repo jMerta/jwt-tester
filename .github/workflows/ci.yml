@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Linux deps
+        run: sudo apt-get update && sudo apt-get install -y libsecret-1-dev pkg-config
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Format
+        run: cargo fmt --manifest-path jwt-tester-app/Cargo.toml --all -- --check
+      - name: Clippy
+        run: cargo clippy --manifest-path jwt-tester-app/Cargo.toml -- -D warnings
+      - name: Test
+        run: cargo test --manifest-path jwt-tester-app/Cargo.toml
+
+  ui-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install UI deps
+        working-directory: jwt-tester-app/ui
+        run: npm ci
+      - name: Build UI
+        working-directory: jwt-tester-app/ui
+        run: npm run build
