@@ -5,7 +5,7 @@ RUN npm install
 COPY ui/ .
 RUN npm run build
 
-FROM rust:1.78-bullseye AS builder
+FROM rust:latest AS builder
 WORKDIR /app
 RUN apt-get update \
     && apt-get install -y --no-install-recommends pkg-config libsecret-1-dev \
