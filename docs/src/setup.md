@@ -101,6 +101,13 @@ docker run --rm ghcr.io/jmerta/jwt-tester:latest --help
 docker run --rm ghcr.io/jmerta/jwt-tester:latest inspect <TOKEN>
 ```
 
+### Docker troubleshooting & tips
+
+- **Passphrase required for persistence:** when `--no-persist` is not set, the file keychain backend is used and requires `JWT_TESTER_KEYCHAIN_PASSPHRASE`.
+- **Data volume location:** the default data dir is `/data` (SQLite + file keychain under `/data/keychain`), so mount a volume there for persistence.
+- **Expose UI on LAN:** the container runs `ui --host 0.0.0.0 --allow-remote`; only do this on trusted networks and consider firewalls.
+- **Ephemeral runs:** use `--no-persist` to skip the passphrase and avoid writing any vault data to disk.
+
 ### Building the Image (local)
 
 ```bash
