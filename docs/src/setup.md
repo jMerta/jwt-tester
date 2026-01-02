@@ -108,6 +108,45 @@ docker run --rm ghcr.io/jmerta/jwt-tester:latest inspect <TOKEN>
 - **Expose UI on LAN:** the container runs `ui --host 0.0.0.0 --allow-remote`; only do this on trusted networks and consider firewalls.
 - **Ephemeral runs:** use `--no-persist` to skip the passphrase and avoid writing any vault data to disk.
 
+### Docker + vault persistence examples
+
+**Persistent vault (bind-mount):**
+```bash
+mkdir -p ./jwt-tester-data
+docker run --rm \
+  -p 3000:3000 \
+  -v $(pwd)/jwt-tester-data:/data \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest
+```
+
+**Persistent vault (named volume):**
+```bash
+docker volume create jwt-tester-data
+docker run --rm \
+  -p 3000:3000 \
+  -v jwt-tester-data:/data \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest
+```
+
+**Custom data directory (same container):**
+```bash
+docker run --rm \
+  -p 3000:3000 \
+  -v $(pwd)/jwt-tester-data:/vault \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest --data-dir /vault
+```
+
+**One-off CLI command with a persisted vault:**
+```bash
+docker run --rm \
+  -v $(pwd)/jwt-tester-data:/data \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest vault project list --details
+```
+
 ### Building the Image (local)
 
 ```bash
