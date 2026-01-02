@@ -28,6 +28,7 @@ Desktop.ini
 **/node_modules/
 **/dist/
 **/build/
+docs/book/
 **/.vite/
 **/.turbo/
 **/.cache/

@@ -6,7 +6,7 @@ This file defines **what the CLI does**, independent of implementation language.
 
 - `TOKEN`: a JWT string (3 dot-separated segments)
 - `-`: read from stdin
-- `@path`: read from a file (convention; see `docs/input.md`)
+- `@path`: read from a file (convention; see `input.md`)
 
 ## `jwt-tester decode`
 
@@ -68,7 +68,7 @@ Key rules:
 - The tool must clearly differentiate:
   - signature validity,
   - claim validation failures (exp/nbf/iss/aud).
-- If `--project` is provided and `--secret/--key/--jwks` is not, the tool resolves key material from the local vault (see `docs/vault.md`).
+- If `--project` is provided and `--secret/--key/--jwks` is not, the tool resolves key material from the local vault (see `vault.md`).
 - If the token header contains `kid`, the vault resolver selects a key with a matching stored `kid` before falling back to defaults.
 
 MVP implemented in `jwt-tester-app/` today:
@@ -123,11 +123,11 @@ jwt-tester encode --alg <ALG> (--secret <S>|--key <K>) [<CLAIMS_JSON|-|@file.jso
 
 Rules:
 
-- Claim merges are deterministic (see `docs/input.md`).
+- Claim merges are deterministic (see `input.md`).
 - By default payload keys are sorted; `--keep-payload-order` preserves input order.
 - `--exp` with no value defaults to `+30m`.
 - If both `--exp` and `--no-exp` exist in your design, document precedence.
-- If `--project` is provided and `--secret/--key` is not, the tool resolves signing key material from the local vault (see `docs/vault.md`).
+- If `--project` is provided and `--secret/--key` is not, the tool resolves signing key material from the local vault (see `vault.md`).
 
 MVP implemented in `jwt-tester-app/` today:
 
@@ -209,7 +209,7 @@ jwt-tester ui
   [--no-persist]
   [--lock-after <DURATION>]
   [--require-passphrase]
-  [--allow-remote]   # strongly discouraged; see docs/ui.md
+  [--allow-remote]   # strongly discouraged; see ui.md
 ```
 
 MVP notes:

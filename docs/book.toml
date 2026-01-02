@@ -1,0 +1,12 @@
+[book]
+title = "jwt-tester"
+description = "JWT CLI + local UI documentation"
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+
+[output.html]
+site-url = "/jwt-tester/"
+git-repository-url = "https://github.com/jMerta/jwt-tester"

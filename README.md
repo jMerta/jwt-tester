@@ -2,18 +2,18 @@
 
 jwt-tester is a local-first JWT CLI plus a localhost-only UI. It supports both direct key input (for one-off work) and a vault (for reuse without retyping secrets). The vault stores only metadata in SQLite; secret material and saved JWT strings live in the OS keychain.
 
-This repo contains the production Rust implementation in `jwt-tester-app/` plus detailed design and spec notes under `docs/`.
+This repo contains the production Rust implementation in `jwt-tester-app/` plus detailed design and spec notes under `docs/src/`.
 
 ## Documentation
 
-Full documentation is available in the `docs/` directory:
+Full documentation is available in the `docs/src/` directory:
 
-- [**Setup & Installation**](docs/setup.md): Build from source or use Docker.
-- [**Usage Examples**](docs/examples.md): Common CLI workflows.
-- [**Command Reference**](docs/commands.md): Detailed CLI command specs.
-- [**Vault Guide**](docs/vault.md): How to use projects and stored keys.
-- [**UI API Reference**](docs/api.md): REST API docs for the web interface.
-- [**Architecture**](docs/architecture.md) & [**Diagrams**](docs/diagrams.md): System design.
+- [**Setup & Installation**](docs/src/setup.md): Build from source or use Docker.
+- [**Usage Examples**](docs/src/examples.md): Common CLI workflows.
+- [**Command Reference**](docs/src/commands.md): Detailed CLI command specs.
+- [**Vault Guide**](docs/src/vault.md): How to use projects and stored keys.
+- [**UI API Reference**](docs/src/api.md): REST API docs for the web interface.
+- [**Architecture**](docs/src/architecture.md) & [**Diagrams**](docs/src/diagrams.md): System design.
 
 ## Features (MVP)
 - Algorithms: HS256/384/512, RS256/384/512, PS256/384/512, ES256/384, EdDSA
@@ -41,8 +41,9 @@ cargo build --release
 ./target/release/jwt-tester --help
 ```
 
-See [docs/setup.md](docs/setup.md) for detailed build instructions including Docker and cross-compilation.
+See [docs/src/setup.md](docs/src/setup.md) for detailed build instructions including Docker and cross-compilation.
 
 ## License
 
 MIT
+

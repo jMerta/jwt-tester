@@ -17,7 +17,7 @@ Design for both:
 
 ## Global flags (recommended)
 
-- `--json`: machine-readable output (see `docs/output.md`)
+- `--json`: machine-readable output (see `output.md`)
 - `--no-color`: disable ANSI color even on TTY
 - `--quiet`: suppress non-essential output (still prints primary result on success)
 - `--verbose` / `-v`: include debug context (not secrets)
