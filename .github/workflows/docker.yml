@@ -22,6 +22,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Resolve npm version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            tag="${GITHUB_REF_NAME}"
+            echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup Node
         if: github.event_name == 'release'
         uses: actions/setup-node@v4
@@ -59,10 +68,12 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./jwt-tester-app
-          file: ./jwt-tester-app/Dockerfile
+          file: ./jwt-tester-app/Dockerfile.npm
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            JWT_TESTER_VERSION=${{ steps.version.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
