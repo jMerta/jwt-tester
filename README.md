@@ -33,6 +33,15 @@ npm install -g jwt-tester-tool
 jwt-tester --help
 ```
 
+Docker (GHCR):
+
+```bash
+docker pull ghcr.io/jmerta/jwt-tester:latest
+docker run --rm -p 3000:3000 -v $(pwd)/data:/data \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest
+```
+
 From the repo root:
 
 ```powershell

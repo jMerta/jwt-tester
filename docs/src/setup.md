@@ -73,16 +73,35 @@ cargo build --release --no-default-features --features cli-only
 *   Environments without local Rust/Node toolchains.
 *   Isolated testing.
 
-**Note:** The Docker image uses a file-based keychain backend because the container doesn't have access to the host OS keychain.
+**Note:** The Docker image uses a file-based keychain backend because the container doesn't have access to the host OS keychain. When persistence is enabled, you must provide `JWT_TESTER_KEYCHAIN_PASSPHRASE`.
 
-### Running the Image
+### Using the published image (GHCR)
 
 ```bash
-# Run the UI on port 3000
-docker run -p 3000:3000 -v $(pwd)/data:/data jwt-tester
+# Pull the latest image
+docker pull ghcr.io/jmerta/jwt-tester:latest
+
+# Run the UI on port 3000 (persistent vault)
+docker run --rm \
+  -p 3000:3000 \
+  -v $(pwd)/data:/data \
+  -e JWT_TESTER_KEYCHAIN_PASSPHRASE="change-me" \
+  ghcr.io/jmerta/jwt-tester:latest
+
+# Run without persistence (no passphrase required)
+docker run --rm \
+  -p 3000:3000 \
+  ghcr.io/jmerta/jwt-tester:latest --no-persist ui --host 0.0.0.0 --port 3000 --allow-remote
 ```
 
-### Building the Image
+### Running CLI commands via Docker
+
+```bash
+docker run --rm ghcr.io/jmerta/jwt-tester:latest --help
+docker run --rm ghcr.io/jmerta/jwt-tester:latest inspect <TOKEN>
+```
+
+### Building the Image (local)
 
 ```bash
 docker build -t jwt-tester -f jwt-tester-app/Dockerfile .
@@ -92,6 +111,8 @@ The Dockerfile uses a multi-stage build:
 1.  `ui-builder`: Node.js image to build frontend assets.
 2.  `builder`: Rust image to compile the binary.
 3.  `final`: Slim Debian image with the binary and assets.
+
+The published image is built for `linux/amd64` and `linux/arm64` and pushed to GHCR on each GitHub Release.
 
 ## Cross-Compilation
 
