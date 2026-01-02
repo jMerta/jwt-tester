@@ -1,0 +1,69 @@
+[package]
+name = "jwt-tester"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+argon2 = "0.5"
+axum = { version = "0.7", optional = true }
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
+clap_complete_nushell = "4"
+directories = "5"
+hex = "0.4"
+humantime = "2"
+jsonwebtoken = "9.3.1"
+rand = "0.8"
+ed25519-dalek = { version = "2", features = ["pkcs8"], optional = true }
+p256 = { version = "0.13", features = ["pkcs8", "pem"], optional = true }
+p384 = { version = "0.13", features = ["pkcs8", "pem"], optional = true }
+pkcs8 = { version = "0.10", optional = true }
+rsa = { version = "0.9", features = ["pem"], optional = true }
+rpassword = "7"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+time = { version = "0.3", features = ["formatting", "local-offset"] }
+tokio = { version = "1", features = ["fs", "macros", "process", "rt-multi-thread", "signal"], optional = true }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[target.'cfg(windows)'.dependencies]
+keyring = { version = "3", features = ["windows-native"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+keyring = { version = "3", features = ["apple-native"] }
+
+[target.'cfg(any(target_os = "linux", target_os = "freebsd", target_os = "openbsd"))'.dependencies]
+keyring = { version = "3", features = ["linux-native"] }
+
+[dev-dependencies]
+assert_cmd = "2"
+predicates = "3"
+tempfile = "3"
+
+[features]
+default = ["ui"]
+keygen = [
+    "dep:ed25519-dalek",
+    "dep:p256",
+    "dep:p384",
+    "dep:pkcs8",
+    "dep:rsa",
+]
+ui = ["dep:axum", "dep:tokio", "keygen"]
+cli-only = ["keygen"]
+
+[[bin]]
+name = "jwt-tester"
+path = "src/main.rs"
+required-features = ["ui"]
+
+[[bin]]
+name = "jwt-tester-cli"
+path = "src/main.rs"
+required-features = ["cli-only"]

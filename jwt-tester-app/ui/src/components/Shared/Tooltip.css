@@ -1,0 +1,29 @@
+.tooltip-trigger {
+    cursor: help;
+    display: inline-block;
+}
+
+.tooltip-bubble {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    /* Center horizontally and move up */
+    background-color: var(--bg-panel);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 9999;
+    /* Highest priority */
+    box-shadow: var(--shadow-lg);
+    animation: fadeIn 0.15s ease-out;
+    pointer-events: none;
+    max-width: 300px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Optional arrow if we want it, but positioning is tricky with Portal without more math. 
+   Keeping it simple effectively creates a floating bubble. */
