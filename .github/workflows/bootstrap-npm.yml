@@ -24,7 +24,7 @@ jobs:
             platform: linux
             arch: arm64
             useCross: true
-          - os: macos-13
+          - os: macos-14
             target: x86_64-apple-darwin
             platform: darwin
             arch: x64
@@ -81,6 +81,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          VERSION="$(node scripts/npm/read-cargo-version.mjs)"
+          publish_if_missing() {
+            local pkg="$1"
+            local dir="$2"
+            if npm view "${pkg}@${VERSION}" version >/dev/null 2>&1; then
+              echo "Skipping ${pkg}@${VERSION} (already published)"
+              return 0
+            fi
+            npm publish --access public "$dir"
+          }
           EXT=""
           if [[ "${{ matrix.platform }}" == "win32" ]]; then
             EXT=".exe"
@@ -89,5 +99,5 @@ jobs:
           CLI_BIN="jwt-tester-app/target/${{ matrix.target }}/release/jwt-tester-cli${EXT}"
           node scripts/npm/package-platform.mjs --variant ui --platform "${{ matrix.platform }}" --arch "${{ matrix.arch }}" --binary "$UI_BIN" --assets jwt-tester-app/ui/dist
           node scripts/npm/package-platform.mjs --variant cli --platform "${{ matrix.platform }}" --arch "${{ matrix.arch }}" --binary "$CLI_BIN"
-          npm publish --access public "dist/npm/@jakmer/jwt-tester-${{ matrix.platform }}-${{ matrix.arch }}"
-          npm publish --access public "dist/npm/@jakmer/jwt-tester-cli-${{ matrix.platform }}-${{ matrix.arch }}"
+          publish_if_missing "@jakmer/jwt-tester-${{ matrix.platform }}-${{ matrix.arch }}" "dist/npm/@jakmer/jwt-tester-${{ matrix.platform }}-${{ matrix.arch }}"
+          publish_if_missing "@jakmer/jwt-tester-cli-${{ matrix.platform }}-${{ matrix.arch }}" "dist/npm/@jakmer/jwt-tester-cli-${{ matrix.platform }}-${{ matrix.arch }}"
