@@ -43,7 +43,7 @@ To build `jwt-tester` from source, you need a standard Rust environment and Node
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/your-org/jwt-tester
+    git clone https://github.com/jMerta/jwt-tester
     cd jwt-tester/jwt-tester-app
     ```
 

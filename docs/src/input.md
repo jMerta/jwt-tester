@@ -60,13 +60,16 @@ You need to support at least:
 
 ### Input forms
 
-For any `--secret/--key/--jwks` style flag, support:
+For secret-like inputs (secrets, keys, tokens, passphrases), the current CLI supports:
 
 - raw string (careful: shell history)
+- `prompt[:LABEL]` to read securely from an interactive prompt
 - `@path` file input
 - `-` stdin input (safe for secrets in scripts)
-- optional: `env:NAME` to read from environment
-- optional: `b64:BASE64` to decode base64 bytes (useful for HMAC secrets)
+- `env:NAME` to read from environment
+- `b64:BASE64` to decode base64 bytes (crypto commands only; see `--help`)
+
+Note: exact forms vary slightly by command; check the specific `--help` output.
 
 ### Format detection vs explicit type
 

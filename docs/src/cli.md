@@ -1,29 +1,27 @@
 # CLI UX and conventions
 
 ## Command model
-
 Binary name: `jwt-tester`.
-
 General structure:
-
 ```
 jwt-tester <command> [options] [args]
 ```
 
-Design for both:
+Global flags must appear before the subcommand (e.g. `jwt-tester --json decode <TOKEN>`).
 
+Design for both:
 - interactive use (humans),
 - automation (pipelines, CI).
 
-## Global flags (recommended)
-
+## Global flags (current)
 - `--json`: machine-readable output (see `output.md`)
 - `--no-color`: disable ANSI color even on TTY
 - `--quiet`: suppress non-essential output (still prints primary result on success)
 - `--verbose` / `-v`: include debug context (not secrets)
+- `--no-persist`: keep vault metadata in memory only (no SQLite)
+- `--data-dir <PATH>`: override the data directory used for persistence
 - `--version`: print version
 - `--help`: print help
-
 ## STDIN / STDOUT rules
 
 - Any argument that accepts a “string payload” should accept `-` as “read from stdin”.
@@ -64,3 +62,6 @@ Provide:
 - `jwt-tester completion bash|zsh|fish|powershell|elvish|nushell`
 
 Output must be deterministic and should not require network access.
+
+
+

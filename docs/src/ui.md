@@ -20,10 +20,10 @@ Default behavior:
 
 - starts an HTTP server bound to localhost only (`127.0.0.1`, and optionally `::1`)
 - serves a small web app at `/`
-- prints the URL (and optionally opens a browser tab)
-- persists data locally (unless `--no-persist`)
+- prints the URL to stdout
+- persists data locally (unless global `--no-persist` is set)
 
-## MVP scope (current)
+## MVP scope (intended)
 
 - UI covers vault CRUD (projects, keys, tokens), including:
   - project description/tags
@@ -31,21 +31,22 @@ Default behavior:
   - default key selection per project
 - Token builder, inspector, and verify screens are implemented.
 - Vault export/import (passphrase-encrypted bundle) is implemented.
-- `--open`, `--lock-after`, and `--require-passphrase` are deferred.
+Deferred flags not implemented in the current CLI: `--open`, `--lock-after`, `--require-passphrase`.
 
-## CLI flags (recommended)
+## CLI flags (current)
 
 ```
 jwt-tester ui
-  --host 127.0.0.1        # default
-  --port 0                # default (ephemeral port)
-  --open                  # deferred
-  --data-dir <PATH>       # where vault DB/files live
-  --no-persist            # ephemeral session only
-  --lock-after <DURATION> # deferred
-  --require-passphrase    # deferred
-  --allow-remote          # dangerous; requires explicit opt-in + UI warning
+  --host <HOST>        # default 127.0.0.1
+  --port <PORT>        # default 0 (ephemeral port)
+  --allow-remote       # dangerous; requires explicit opt-in + UI warning
+  --build              # force rebuild of UI assets before starting the server
+  --dev                # run the Vite dev server (hot reload) alongside the API
+  --npm <NPM>          # override npm path
 ```
+
+Global flags `--data-dir` and `--no-persist` apply to UI/vault as well:
+`jwt-tester --data-dir <PATH> --no-persist ui`
 
 If you offer `--allow-remote`, treat it as a footgun:
 

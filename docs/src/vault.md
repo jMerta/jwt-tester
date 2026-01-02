@@ -13,6 +13,25 @@ This is especially useful when driving `jwt-tester` from LLM-assisted workflows:
 
 Note: you can later evolve `project` into `domain + project` (or add tags/environments) without changing the core idea; keep IDs stable and add the extra column(s) when you need them.
 
+## CLI surface (current)
+
+- `project`: add, list, delete, set-default-key
+- `key`: add, generate, list, delete
+- `token`: add, list, delete
+- `export` / `import`
+
+Secret/token/passphrase inputs accept `prompt[:LABEL]`, `-`, `@file`, and `env:NAME` (see `input.md`).
+
+### Key generation (current)
+
+`jwt-tester vault key generate` can create and store:
+
+- HMAC secrets (`--hmac-bytes <N>`)
+- RSA keys (`--rsa-bits 2048|3072|4096`)
+- EC keys (`--ec-curve P-256|P-384`)
+
+Use `--reveal` to print generated material and `--out <PATH>` to write it to a file.
+
 ## Entities
 
 ### Project

@@ -8,6 +8,9 @@ This file defines **what the CLI does**, independent of implementation language.
 - `-`: read from stdin
 - `@path`: read from a file (convention; see `input.md`)
 
+Global flags (like `--json`, `--no-color`, `--quiet`, `--verbose`, `--no-persist`, `--data-dir`) must appear before the subcommand.
+Example: `jwt-tester --json decode <TOKEN>`.
+
 ## `jwt-tester decode`
 
 Purpose: parse a JWT and print header + payload.
@@ -21,7 +24,7 @@ Key rules:
 Suggested interface:
 
 ```
-jwt-tester decode [--json] [--date[=<UTC|local|+HH:MM>]] [--out <PATH>] <TOKEN|->
+jwt-tester decode [--date[=<UTC|local|+HH:MM>]] [--out <PATH>] <TOKEN|->
   [--alg <ALG>] (--secret <S>|--key <K>|--jwks <JWKS>|--project <PROJECT>)
   [--key-format <pem|der>]
   [--kid <KID>] [--allow-single-jwk]
@@ -36,7 +39,7 @@ jwt-tester decode [--json] [--date[=<UTC|local|+HH:MM>]] [--out <PATH>] <TOKEN|-
 Outputs:
 
 - text: labeled “UNVERIFIED” unless verification succeeds (then “VERIFIED”)
-- json: `{ ok, data: { header, payload, dates, verified?, verification? } }`
+- json (via global `--json` or `--out`): `{ ok, data: { header, payload, dates, verified?, verification? } }`
 
 Exit codes:
 
@@ -50,7 +53,7 @@ Purpose: verify signature and validate claims.
 Suggested interface:
 
 ```
-jwt-tester verify [--json] [--alg <ALG>] (--secret <S>|--key <K>|--jwks <JWKS>|--project <PROJECT>) <TOKEN|->
+jwt-tester verify [--alg <ALG>] (--secret <S>|--key <K>|--jwks <JWKS>|--project <PROJECT>) <TOKEN|->
   [--key-format <pem|der>]
   [--kid <KID>] [--allow-single-jwk]
   [--key-id <UUID> | --key-name <NAME>]
@@ -60,6 +63,8 @@ jwt-tester verify [--json] [--alg <ALG>] (--secret <S>|--key <K>|--jwks <JWKS>|-
   [--require <claim> ...]
   [--explain]
 ```
+
+JSON output is enabled with the global flag: `jwt-tester --json verify ...`.
 
 Key rules:
 
@@ -182,6 +187,9 @@ jwt-tester split <TOKEN|->
 
 This is useful for scripts and debugging.
 
+For machine-readable output, use the global flag: `jwt-tester --json split <TOKEN>`.
+When `--json` is set, the output is JSON regardless of `--format`.
+
 ## `jwt-tester completion`
 
 ```
@@ -198,25 +206,19 @@ Purpose: start a **local-only** web interface on localhost to:
 - build/inspect/verify tokens interactively,
 - export/import vault data intentionally.
 
-Suggested interface:
+Current CLI (0.1.0):
 
 ```
 jwt-tester ui
-  [--host 127.0.0.1]
-  [--port <0|PORT>]
-  [--open]
-  [--data-dir <PATH>]
-  [--no-persist]
-  [--lock-after <DURATION>]
-  [--require-passphrase]
+  [--host <HOST>]
+  [--port <PORT>]
   [--allow-remote]   # strongly discouraged; see ui.md
+  [--build]
+  [--dev]
+  [--npm <NPM>]
 ```
 
-MVP notes:
-
-- UI covers vault CRUD plus token builder/inspector/verify.
-- Vault export/import is available via CLI and UI.
-- Flags `--open`, `--lock-after`, and `--require-passphrase` are deferred.
+Global flags `--data-dir` and `--no-persist` apply here as well.
 
 Rules:
 
@@ -240,15 +242,22 @@ Purpose: manage vault entries from CLI (useful for headless usage and for LLM-dr
 Suggested interface:
 
 ```
-jwt-tester vault project add <NAME> [--description <TEXT>] [--tag <TAG> ...]
+jwt-tester vault project add <NAME> [--description <TEXT>] [--tag <TAG> ...]    
 jwt-tester vault project list
+jwt-tester vault project delete [<ID>] [--name <NAME>]
 jwt-tester vault project set-default-key --project <NAME> (--key-id <UUID> | --key-name <NAME> | --clear)
-jwt-tester vault key add --project <NAME> [--name <KEY_NAME>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...] --kind hmac --secret <SECRET|-|@file>
+jwt-tester vault key add --project <NAME> [--name <KEY_NAME>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...] --kind hmac --secret <SECRET>
+jwt-tester vault key generate --project <NAME> [--name <KEY_NAME>] [--kind <hmac|rsa|ec|eddsa>] [--kid <KID>] [--description <TEXT>] [--tag <TAG> ...]
+  [--hmac-bytes <N>] [--rsa-bits <N>] [--ec-curve <P-256|P-384>] [--reveal] [--out <PATH>]
 jwt-tester vault key list --project <NAME>
-jwt-tester vault token add --project <NAME> --name <TOKEN_NAME> --token <TOKEN|-|@file>
+jwt-tester vault key delete [<ID>] [--project <NAME> --name <NAME>]
+jwt-tester vault token add --project <NAME> --name <TOKEN_NAME> --token <TOKEN>
 jwt-tester vault token list --project <NAME>
+jwt-tester vault token delete [<ID>] [--project <NAME> --name <NAME>]
 jwt-tester vault export --passphrase <PASS> [--out <PATH>]
 jwt-tester vault import --bundle <BUNDLE|-|@file> --passphrase <PASS> [--replace]
 ```
+
+See `input.md` for supported secret/token/passphrase input forms (including `prompt[:LABEL]`, `-`, `@file`, and `env:NAME`).
 
 

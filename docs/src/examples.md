@@ -96,7 +96,7 @@ jwt-tester inspect token.jwt --date local
 **Split a token for scripting:**
 ```bash
 # Get just the payload JSON
-jwt-tester split token.jwt --format json | jq .payload
+jwt-tester --json split token.jwt | jq .data.payload
 ```
 
 ## 6. Exporting the Vault

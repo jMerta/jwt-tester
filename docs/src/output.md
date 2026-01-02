@@ -5,7 +5,7 @@
 - **stdout**: primary output (token, JSON result, decoded claims)
 - **stderr**: errors and warnings (in text mode)
 
-When `--json` is provided:
+When `--json` is provided (global flag placed before the subcommand, e.g. `jwt-tester --json decode <TOKEN>`):
 
 - stdout must be valid JSON only (no extra banners).
 - stderr should be empty on success; on failure it may contain minimal diagnostics, but prefer JSON-only contracts.
