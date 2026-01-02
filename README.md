@@ -38,4 +38,4 @@ See [docs/setup.md](docs/setup.md) for detailed build instructions including Doc
 
 ## License
 
-MIT / Apache-2.0
+MIT
