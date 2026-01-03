@@ -6,9 +6,9 @@ This repo contains the production Rust implementation in `jwt-tester-app/` plus 
 
 ## CLI Demo
 
-Click to watch the CLI walkthrough:
+Preview (first ~20s). Click to watch the full CLI walkthrough:
 
-[![CLI demo](assets/showcase.png)](assets/showcase.mp4)
+[![CLI demo](assets/showcase.gif)](assets/showcase.mp4)
 
 ## Documentation
 
