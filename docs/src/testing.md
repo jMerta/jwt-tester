@@ -15,6 +15,12 @@
 4. Property tests / fuzzing (optional but high value)
    - random tokens and random bytes should never crash the CLI
 
+## CI/CD
+
+- CI runs tests on every push to branches and on pull requests.
+- Release publishing runs only on tag pushes matching `*.*.*` (for example `0.1.0` or `v0.1.0`).
+- Release tags must match the `version` in `jwt-tester-app/Cargo.toml`.
+
 ## Fixtures
 
 Maintain fixtures in a dedicated folder (recommended):

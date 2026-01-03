@@ -1,12 +1,36 @@
 name: release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - '*.*.*'
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Linux deps
+        run: sudo apt-get update && sudo apt-get install -y libsecret-1-dev pkg-config
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Test (Rust)
+        run: cargo test --manifest-path jwt-tester-app/Cargo.toml
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install UI deps
+        working-directory: jwt-tester-app/ui
+        run: npm ci
+      - name: Test (UI)
+        working-directory: jwt-tester-app/ui
+        run: npm run test
+
   publish-platform:
     runs-on: ${{ matrix.os }}
+    needs: [tests]
     permissions:
       contents: read
       id-token: write
