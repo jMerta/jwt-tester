@@ -6,7 +6,6 @@ This repo contains the production Rust implementation in `jwt-tester-app/` plus 
 
 ## CLI Demo
 
-Inline demo (plays on GitHub):
 
 <video src="https://github.com/user-attachments/assets/23a5e481-32a2-41e4-ac1d-f81bb3bd6028" controls muted playsinline></video>
 
