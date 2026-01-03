@@ -4,6 +4,12 @@ jwt-tester is a local-first JWT CLI plus a localhost-only UI. It supports both d
 
 This repo contains the production Rust implementation in `jwt-tester-app/` plus detailed design and spec notes under `docs/src/`.
 
+## CLI Demo
+
+Click to watch the CLI walkthrough:
+
+[![CLI demo](assets/showcase.png)](assets/showcase.mp4)
+
 ## Documentation
 
 Full documentation is available in the `docs/src/` directory:
