@@ -10,10 +10,6 @@ Inline demo (plays on GitHub):
 
 <video src="https://github.com/user-attachments/assets/23a5e481-32a2-41e4-ac1d-f81bb3bd6028" controls muted playsinline></video>
 
-Preview (first ~20s). Click to watch the full CLI walkthrough:
-
-[![CLI demo](assets/showcase.gif)](assets/showcase.mp4)
-
 ## Documentation
 
 Full documentation is available in the `docs/src/` directory:
